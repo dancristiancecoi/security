@@ -18,8 +18,13 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.password4j.BcryptFunction;
+import com.password4j.PBKDF2Function;
+import com.password4j.Password;
+import com.password4j.types.Bcrypt;
+import com.password4j.types.Hmac;
 import org.apache.commons.lang3.tuple.Triple;
-import org.bouncycastle.crypto.generators.OpenBSDBCrypt;
+
 
 import org.opensearch.cluster.service.ClusterService;
 import org.opensearch.common.settings.Settings;
@@ -28,6 +33,7 @@ import org.opensearch.core.common.transport.TransportAddress;
 import org.opensearch.core.rest.RestStatus;
 import org.opensearch.rest.RestChannel;
 import org.opensearch.rest.RestRequest.Method;
+import org.opensearch.security.dlic.rest.support.Utils;
 import org.opensearch.security.dlic.rest.validation.EndpointValidator;
 import org.opensearch.security.dlic.rest.validation.RequestContentValidator;
 import org.opensearch.security.dlic.rest.validation.RequestContentValidator.DataType;
@@ -132,7 +138,10 @@ public class AccountApiAction extends AbstractApiAction {
         final var currentPassword = content.get("current_password").asText();
         final var internalUserEntry = (Hashed) securityConfiguration.configuration().getCEntry(username);
         final var currentHash = internalUserEntry.getHash();
-        if (currentHash == null || !OpenBSDBCrypt.checkPassword(currentHash, currentPassword.toCharArray())) {
+
+        boolean fipsEnabled = clusterService.getSettings().getAsBoolean(ConfigConstants.SECURITY_FIPS_MODE_ENABLED_KEY, false);
+
+        if (currentHash == null || !Utils.checkPassword(currentHash, currentPassword.toCharArray(), fipsEnabled)) {
             return ValidationResult.error(RestStatus.BAD_REQUEST, badRequestMessage("Could not validate your current password."));
         }
         return ValidationResult.success(securityConfiguration);
@@ -148,7 +157,8 @@ public class AccountApiAction extends AbstractApiAction {
         if (Strings.isNullOrEmpty(password)) {
             hash = securityJsonNode.get("hash").asString();
         } else {
-            hash = hash(password.toCharArray());
+            final boolean fipsEnabled = clusterService.getSettings().getAsBoolean(ConfigConstants.SECURITY_FIPS_MODE_ENABLED_KEY, false);
+            hash = hash(password.toCharArray(), fipsEnabled);
         }
         if (Strings.isNullOrEmpty(hash)) {
             return ValidationResult.error(

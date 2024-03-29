@@ -62,6 +62,8 @@ public class LDAPAuthenticationBackend2 implements AuthenticationBackend, Destro
     private final String[] returnAttributes;
     private final boolean shouldFollowReferrals;
 
+    //private final boolean fipsEnabled;
+
     public LDAPAuthenticationBackend2(final Settings settings, final Path configPath) throws SSLConfigException {
         this.settings = settings;
 
@@ -88,7 +90,7 @@ public class LDAPAuthenticationBackend2 implements AuthenticationBackend, Destro
 
     @Override
     @SuppressWarnings("removal")
-    public User authenticate(final AuthCredentials credentials) throws OpenSearchSecurityException {
+    public User authenticate(final AuthCredentials credentials, final boolean fipsEnabled) throws OpenSearchSecurityException {
         final SecurityManager sm = System.getSecurityManager();
 
         if (sm != null) {
