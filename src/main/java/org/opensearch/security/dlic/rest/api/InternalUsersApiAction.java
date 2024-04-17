@@ -12,6 +12,7 @@
 package org.opensearch.security.dlic.rest.api;
 
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,8 @@ import org.opensearch.security.dlic.rest.validation.EndpointValidator;
 import org.opensearch.security.dlic.rest.validation.RequestContentValidator;
 import org.opensearch.security.dlic.rest.validation.RequestContentValidator.DataType;
 import org.opensearch.security.dlic.rest.validation.ValidationResult;
+import org.opensearch.security.hash.PasswordHasher;
+import org.opensearch.security.hash.PasswordHasherImpl;
 import org.opensearch.security.securityconf.Hashed;
 import org.opensearch.security.securityconf.impl.CType;
 import org.opensearch.security.securityconf.impl.SecurityDynamicConfiguration;
@@ -47,7 +50,6 @@ import static org.opensearch.security.dlic.rest.api.Responses.ok;
 import static org.opensearch.security.dlic.rest.api.Responses.payload;
 import static org.opensearch.security.dlic.rest.api.Responses.response;
 import static org.opensearch.security.dlic.rest.support.Utils.addRoutesPrefix;
-import static org.opensearch.security.dlic.rest.support.Utils.hash;
 
 public class InternalUsersApiAction extends AbstractApiAction {
 
@@ -56,6 +58,8 @@ public class InternalUsersApiAction extends AbstractApiAction {
         request.param("name");
         request.param("filterBy");
     }
+
+    private final PasswordHasher passwordHasher;
 
     static final List<String> RESTRICTED_FROM_USERNAME = ImmutableList.of(
         ":" // Not allowed in basic auth, see https://stackoverflow.com/a/33391003/533057
@@ -92,6 +96,7 @@ public class InternalUsersApiAction extends AbstractApiAction {
         super(Endpoint.INTERNALUSERS, clusterService, threadPool, securityApiDependencies);
         this.userService = userService;
         this.requestHandlersBuilder.configureRequestHandlers(this::internalUsersApiRequestHandlers);
+        this.passwordHasher = new PasswordHasherImpl(securityApiDependencies.settings());
     }
 
     @Override
@@ -268,7 +273,7 @@ public class InternalUsersApiAction extends AbstractApiAction {
                 if (content.has("password")) {
                     final var plainTextPassword = content.get("password").asText();
                     content.remove("password");
-                    content.put("hash", hash(plainTextPassword.toCharArray()));
+                    content.put("hash", passwordHasher.hash(CharBuffer.wrap(plainTextPassword.toCharArray())));
                 }
                 return ValidationResult.success(securityConfiguration);
             }

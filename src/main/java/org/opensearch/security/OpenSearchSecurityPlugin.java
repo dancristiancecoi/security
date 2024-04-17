@@ -1916,6 +1916,150 @@ public final class OpenSearchSecurityPlugin extends OpenSearchSecuritySSLPlugin
             );
         }
 
+        settings.add(
+            Setting.simpleString(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ALGORITHM,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ALGORITHM_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_PBKDF2_ITERATIONS,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_PBKDF2_ITERATIONS_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_PBKDF2_LENGTH,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_PBKDF2_LENGTH_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.simpleString(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_PBKDF2_FUNCTION,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_PBKDF2_FUNCTION_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_SCRYPT_WORK_FACTOR,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_SCRYPT_WORK_FACTOR_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_SCRYPT_RESOURCES,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_SCRYPT_RESOURCES_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_SCRYPT_PARALLELIZATION,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_SCRYPT_PARALLELIZATION_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_SCRYPT_DERIVED_KEY_LENGTH,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_SCRYPT_DERIVED_KEY_LENGTH_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_MEMORY,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_MEMORY_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_ITERATIONS,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_ITERATIONS_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_LENGTH,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_LENGTH_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_PARALLELISM,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_PARALLELISM_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.simpleString(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_TYPE,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_TYPE_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_VERSION,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_ARGON2_VERSION_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.intSetting(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_BCRYPT_ROUNDS,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_BCRYPT_ROUNDS_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
+        settings.add(
+            Setting.simpleString(
+                ConfigConstants.SECURITY_PASSWORD_HASHING_BCRYPT_MINOR,
+                ConfigConstants.SECURITY_PASSWORD_HASHING_BCRYPT_MINOR_DEFAULT,
+                Property.NodeScope,
+                Property.Final
+            )
+        );
+
         return settings;
     }
 

@@ -35,11 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bouncycastle.crypto.generators.OpenBSDBCrypt;
-
 import org.opensearch.OpenSearchSecurityException;
+import org.opensearch.common.settings.Settings;
 import org.opensearch.security.auth.AuthenticationBackend;
 import org.opensearch.security.auth.AuthorizationBackend;
+import org.opensearch.security.hash.PasswordHasher;
+import org.opensearch.security.hash.PasswordHasherImpl;
 import org.opensearch.security.securityconf.InternalUsersModel;
 import org.opensearch.security.user.AuthCredentials;
 import org.opensearch.security.user.User;
@@ -49,6 +50,11 @@ import org.greenrobot.eventbus.Subscribe;
 public class InternalAuthenticationBackend implements AuthenticationBackend, AuthorizationBackend {
 
     private InternalUsersModel internalUsersModel;
+    private final PasswordHasher passwordHasher;
+
+    public InternalAuthenticationBackend(Settings settings) {
+        this.passwordHasher = new PasswordHasherImpl(settings);
+    }
 
     @Override
     public boolean exists(User user) {
@@ -91,7 +97,7 @@ public class InternalAuthenticationBackend implements AuthenticationBackend, Aut
      * @return Whether the hash matches the provided password
      */
     public boolean passwordMatchesHash(String hash, char[] array) {
-        return OpenBSDBCrypt.checkPassword(hash, array);
+        return passwordHasher.check(CharBuffer.wrap(array), hash);
     }
 
     @Override

@@ -10,9 +10,13 @@
 
 package org.opensearch.security.api;
 
+import java.nio.CharBuffer;
+
 import org.junit.Test;
 
 import org.opensearch.core.xcontent.ToXContentObject;
+import org.opensearch.security.hash.PasswordHasher;
+import org.opensearch.security.hash.PasswordHasherImpl;
 import org.opensearch.test.framework.TestSecurityConfig;
 import org.opensearch.test.framework.cluster.TestRestClient;
 
@@ -20,7 +24,6 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
-import static org.opensearch.security.dlic.rest.support.Utils.hash;
 
 public class AccountRestApiIntegrationTest extends AbstractApiIntegrationTest {
 
@@ -106,11 +109,15 @@ public class AccountRestApiIntegrationTest extends AbstractApiIntegrationTest {
 
     private void verifyPasswordCanBeChanged() throws Exception {
         final var newPassword = randomAlphabetic(10);
+        final PasswordHasher passwordHasher = new PasswordHasherImpl();
         withUser(
             TEST_USER,
             TEST_USER_PASSWORD,
             client -> ok(
-                () -> client.putJson(accountPath(), changePasswordWithHashPayload(TEST_USER_PASSWORD, hash(newPassword.toCharArray())))
+                () -> client.putJson(
+                    accountPath(),
+                    changePasswordWithHashPayload(TEST_USER_PASSWORD, passwordHasher.hash(CharBuffer.wrap(newPassword.toCharArray())))
+                )
             )
         );
         withUser(

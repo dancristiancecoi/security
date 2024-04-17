@@ -12,6 +12,7 @@
 package org.opensearch.security.user;
 
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +46,8 @@ import org.opensearch.identity.tokens.AuthToken;
 import org.opensearch.identity.tokens.BasicAuthToken;
 import org.opensearch.security.DefaultObjectMapper;
 import org.opensearch.security.configuration.ConfigurationRepository;
+import org.opensearch.security.hash.PasswordHasher;
+import org.opensearch.security.hash.PasswordHasherImpl;
 import org.opensearch.security.securityconf.DynamicConfigFactory;
 import org.opensearch.security.securityconf.Hashed;
 import org.opensearch.security.securityconf.impl.CType;
@@ -57,8 +60,6 @@ import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
 import org.passay.PasswordGenerator;
 
-import static org.opensearch.security.dlic.rest.support.Utils.hash;
-
 /**
  * This class handles user registration and operations on behalf of the Security Plugin.
  */
@@ -69,6 +70,8 @@ public class UserService {
     private final ConfigurationRepository configurationRepository;
     String securityIndex;
     Client client;
+    Settings settings;
+    private final PasswordHasher passwordHasher;
 
     User tokenUser;
     final static String NO_PASSWORD_OR_HASH_MESSAGE = "Please specify either 'hash' or 'password' when creating a new internal user.";
@@ -102,6 +105,8 @@ public class UserService {
             ConfigConstants.OPENDISTRO_SECURITY_DEFAULT_CONFIG_INDEX
         );
         this.client = client;
+        this.settings = settings;
+        this.passwordHasher = new PasswordHasherImpl(settings);
     }
 
     /**
@@ -142,7 +147,7 @@ public class UserService {
                                                                                                                           // service account
             verifyServiceAccount(securityJsonNode, accountName);
             String password = generatePassword();
-            contentAsNode.put("hash", hash(password.toCharArray()));
+            contentAsNode.put("hash", passwordHasher.hash(CharBuffer.wrap(password.toCharArray())));
             contentAsNode.put("service", "true");
         } else {
             contentAsNode.put("service", "false");
@@ -162,7 +167,7 @@ public class UserService {
         final String origHash = securityJsonNode.get("hash").asString();
         if (plainTextPassword != null && plainTextPassword.length() > 0) {
             contentAsNode.remove("password");
-            contentAsNode.put("hash", hash(plainTextPassword.toCharArray()));
+            contentAsNode.put("hash", passwordHasher.hash(CharBuffer.wrap(plainTextPassword.toCharArray())));
         } else if (origHash != null && origHash.length() > 0) {
             contentAsNode.remove("password");
         } else if (plainTextPassword != null && plainTextPassword.isEmpty() && origHash == null) {
@@ -275,7 +280,7 @@ public class UserService {
 
             // Generate a new password for the account and store the hash of it
             String plainTextPassword = generatePassword();
-            contentAsNode.put("hash", hash(plainTextPassword.toCharArray()));
+            contentAsNode.put("hash", passwordHasher.hash(CharBuffer.wrap(plainTextPassword.toCharArray())));
             contentAsNode.put("enabled", "true");
             contentAsNode.put("service", "true");
 

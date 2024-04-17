@@ -128,7 +128,7 @@ public class DynamicConfigFactory implements Initializable, ConfigurationChangeL
     private final EventBus eventBus = EVENT_BUS_BUILDER.logger(new JavaLogger(DynamicConfigFactory.class.getCanonicalName())).build();
     private final Settings opensearchSettings;
     private final Path configPath;
-    private final InternalAuthenticationBackend iab = new InternalAuthenticationBackend();
+    private final InternalAuthenticationBackend iab;
     private final ClusterInfoHolder cih;
 
     SecurityDynamicConfiguration<?> config;
@@ -146,6 +146,7 @@ public class DynamicConfigFactory implements Initializable, ConfigurationChangeL
         this.opensearchSettings = opensearchSettings;
         this.configPath = configPath;
         this.cih = cih;
+        this.iab = new InternalAuthenticationBackend(opensearchSettings);
 
         if (opensearchSettings.getAsBoolean(ConfigConstants.SECURITY_UNSUPPORTED_LOAD_STATIC_RESOURCES, true)) {
             try {
