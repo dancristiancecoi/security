@@ -11,6 +11,7 @@
 
 package org.opensearch.security.dlic.rest.api;
 
+import java.nio.CharBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +20,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Triple;
-import org.bouncycastle.crypto.generators.OpenBSDBCrypt;
 
 import org.opensearch.cluster.service.ClusterService;
 import org.opensearch.common.settings.Settings;
@@ -32,6 +32,8 @@ import org.opensearch.security.dlic.rest.validation.EndpointValidator;
 import org.opensearch.security.dlic.rest.validation.RequestContentValidator;
 import org.opensearch.security.dlic.rest.validation.RequestContentValidator.DataType;
 import org.opensearch.security.dlic.rest.validation.ValidationResult;
+import org.opensearch.security.hash.PasswordHasher;
+import org.opensearch.security.hash.PasswordHasherImpl;
 import org.opensearch.security.securityconf.Hashed;
 import org.opensearch.security.securityconf.impl.CType;
 import org.opensearch.security.securityconf.impl.SecurityDynamicConfiguration;
@@ -44,13 +46,15 @@ import static org.opensearch.security.dlic.rest.api.Responses.badRequestMessage;
 import static org.opensearch.security.dlic.rest.api.Responses.ok;
 import static org.opensearch.security.dlic.rest.api.Responses.response;
 import static org.opensearch.security.dlic.rest.support.Utils.addRoutesPrefix;
-import static org.opensearch.security.dlic.rest.support.Utils.hash;
 
 /**
  * Rest API action to fetch or update account details of the signed-in user.
  * Currently this action serves GET and PUT request for /_opendistro/_security/api/account endpoint
  */
 public class AccountApiAction extends AbstractApiAction {
+
+    private final PasswordHasher passwordHasher;
+
     private static final List<Route> routes = addRoutesPrefix(
         ImmutableList.of(new Route(Method.GET, "/account"), new Route(Method.PUT, "/account"))
     );
@@ -62,6 +66,7 @@ public class AccountApiAction extends AbstractApiAction {
     ) {
         super(Endpoint.ACCOUNT, clusterService, threadPool, securityApiDependencies);
         this.requestHandlersBuilder.configureRequestHandlers(this::accountApiRequestHandlers);
+        this.passwordHasher = new PasswordHasherImpl(securityApiDependencies.settings());
     }
 
     @Override
@@ -132,7 +137,7 @@ public class AccountApiAction extends AbstractApiAction {
         final var currentPassword = content.get("current_password").asText();
         final var internalUserEntry = (Hashed) securityConfiguration.configuration().getCEntry(username);
         final var currentHash = internalUserEntry.getHash();
-        if (currentHash == null || !OpenBSDBCrypt.checkPassword(currentHash, currentPassword.toCharArray())) {
+        if (currentHash == null || !passwordHasher.check(CharBuffer.wrap(currentPassword.toCharArray()), currentHash)) {
             return ValidationResult.error(RestStatus.BAD_REQUEST, badRequestMessage("Could not validate your current password."));
         }
         return ValidationResult.success(securityConfiguration);
@@ -148,7 +153,7 @@ public class AccountApiAction extends AbstractApiAction {
         if (Strings.isNullOrEmpty(password)) {
             hash = securityJsonNode.get("hash").asString();
         } else {
-            hash = hash(password.toCharArray());
+            hash = passwordHasher.hash(CharBuffer.wrap(password.toCharArray()));
         }
         if (Strings.isNullOrEmpty(hash)) {
             return ValidationResult.error(

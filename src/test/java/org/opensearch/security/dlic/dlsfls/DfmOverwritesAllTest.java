@@ -219,7 +219,10 @@ public class DfmOverwritesAllTest extends AbstractDlsFlsTest {
      */
     @Test
     public void testDFMRestrictedAndUnrestrictedOneIndex() throws Exception {
-        final Settings settings = Settings.builder().put(ConfigConstants.SECURITY_DFM_EMPTY_OVERRIDES_ALL, true).build();
+        final Settings settings = Settings.builder()
+            .put(ConfigConstants.SECURITY_DFM_EMPTY_OVERRIDES_ALL, true)
+            .put(ConfigConstants.SECURITY_PASSWORD_HASHING_ALGORITHM, ConfigConstants.SECURITY_PASSWORD_HASHING_ALGORITHM_DEFAULT)
+            .build();
         setup(
             settings,
             new DynamicSecurityConfig().setConfig("securityconfig_dfm_empty_overwrites_all.yml")

@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.opensearch.OpenSearchSecurityException;
+import org.opensearch.common.settings.Settings;
 import org.opensearch.security.auth.internal.InternalAuthenticationBackend;
 import org.opensearch.security.securityconf.InternalUsersModel;
 import org.opensearch.security.user.AuthCredentials;
@@ -42,7 +43,7 @@ public class InternalAuthBackendTests {
 
     @Before
     public void internalAuthBackendTestsSetup() {
-        internalAuthenticationBackend = spy(new InternalAuthenticationBackend());
+        internalAuthenticationBackend = spy(new InternalAuthenticationBackend(Settings.EMPTY));
         internalUsersModel = mock(InternalUsersModel.class);
         internalAuthenticationBackend.onInternalUsersModelChanged(internalUsersModel);
     }

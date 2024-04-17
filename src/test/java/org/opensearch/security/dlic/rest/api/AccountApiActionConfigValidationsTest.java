@@ -9,12 +9,13 @@
  */
 package org.opensearch.security.dlic.rest.api;
 
+import java.nio.CharBuffer;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 import org.bouncycastle.crypto.generators.OpenBSDBCrypt;
 
 import org.opensearch.core.rest.RestStatus;
-import org.opensearch.security.dlic.rest.support.Utils;
 import org.opensearch.security.securityconf.impl.v7.InternalUserV7;
 
 import org.mockito.Mockito;
@@ -35,7 +36,7 @@ public class AccountApiActionConfigValidationsTest extends AbstractApiActionVali
         assertFalse(result.isValid());
         assertEquals(RestStatus.BAD_REQUEST, result.status());
 
-        u.setHash(Utils.hash("aaaa".toCharArray()));
+        u.setHash(passwordHasher.hash(CharBuffer.wrap("aaaa".toCharArray())));
         result = accountApiAction.validCurrentPassword(SecurityConfiguration.of(requestContent(), "u", configuration));
         assertTrue(result.isValid());
     }
@@ -59,7 +60,7 @@ public class AccountApiActionConfigValidationsTest extends AbstractApiActionVali
         assertTrue(OpenBSDBCrypt.checkPassword(u.getHash(), "cccccc".toCharArray()));
 
         requestContent.remove("password");
-        requestContent.put("hash", Utils.hash("dddddd".toCharArray()));
+        requestContent.put("hash", passwordHasher.hash(CharBuffer.wrap("dddddd".toCharArray())));
         result = accountApiAction.updatePassword(SecurityConfiguration.of(requestContent, "u", configuration));
         assertTrue(result.isValid());
         assertTrue(OpenBSDBCrypt.checkPassword(u.getHash(), "dddddd".toCharArray()));
@@ -71,7 +72,7 @@ public class AccountApiActionConfigValidationsTest extends AbstractApiActionVali
 
     private InternalUserV7 createExistingUser() {
         final var u = new InternalUserV7();
-        u.setHash(Utils.hash("sssss".toCharArray()));
+        u.setHash(passwordHasher.hash(CharBuffer.wrap("sssss".toCharArray())));
         Mockito.<Object>when(configuration.getCEntry("u")).thenReturn(u);
         return u;
     }
