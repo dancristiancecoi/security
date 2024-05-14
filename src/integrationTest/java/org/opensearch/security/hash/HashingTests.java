@@ -30,7 +30,6 @@ import com.password4j.types.Argon2;
 import com.password4j.types.Bcrypt;
 
 import static org.apache.http.HttpStatus.SC_CREATED;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.opensearch.test.framework.TestSecurityConfig.Role.ALL_ACCESS;
