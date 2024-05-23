@@ -25,7 +25,6 @@ public class PasswordHasherTest {
     private final String password = "testPassword";
     private final String wrongPassword = "wrongTestPassword";
 
-
     @Test
     public void shouldMatchHashToCorrectPassword() {
         String hashedPassword = passwordHasher.hash(password.toCharArray());
@@ -38,12 +37,11 @@ public class PasswordHasherTest {
         assertFalse(passwordHasher.check(wrongPassword.toCharArray(), hashedPassword));
     }
 
-
     /**
      * Ensures that the hashes that were previously created by OpenBSDBCrypt are still valid
      */
     @Test
-    public void shouldBeBackwardsCompatible(){
+    public void shouldBeBackwardsCompatible() {
         String legacyHash = "$2y$12$gdh2ecVBQmwpmcAeyReicuNtXyR6GMWSfXHxtcBBqFeFz2VQ8kDZe";
         assertTrue(passwordHasher.check(password.toCharArray(), legacyHash));
         assertFalse(passwordHasher.check(wrongPassword.toCharArray(), legacyHash));
