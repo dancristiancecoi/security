@@ -55,8 +55,8 @@ import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.core.xcontent.ToXContentObject;
 import org.opensearch.core.xcontent.XContentBuilder;
+import org.opensearch.security.hasher.BCryptPasswordHasher;
 import org.opensearch.security.hasher.PasswordHasher;
-import org.opensearch.security.hasher.PasswordHasherImpl;
 import org.opensearch.security.securityconf.impl.CType;
 import org.opensearch.test.framework.cluster.OpenSearchClientProvider.UserCredentialsHolder;
 
@@ -78,7 +78,7 @@ public class TestSecurityConfig {
 
     private static final Logger log = LogManager.getLogger(TestSecurityConfig.class);
     public static final String REST_ADMIN_REST_API_ACCESS = "rest_admin__rest_api_access";
-    private static final PasswordHasher passwordHasher = new PasswordHasherImpl();
+    private static final PasswordHasher passwordHasher = new BCryptPasswordHasher();
 
     private Config config = new Config();
     private Map<String, User> internalUsers = new LinkedHashMap<>();

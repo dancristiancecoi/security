@@ -20,9 +20,11 @@ import static org.junit.Assert.assertTrue;
 
 public class PasswordHasherTest {
 
-    private final PasswordHasher passwordHasher = new PasswordHasherImpl();
+    private final PasswordHasher passwordHasher = new BCryptPasswordHasher();
 
     private final String password = "testPassword";
+    private final String wrongPassword = "wrongTestPassword";
+
 
     @Test
     public void shouldMatchHashToCorrectPassword() {
@@ -33,8 +35,19 @@ public class PasswordHasherTest {
     @Test
     public void shouldNotMatchHashToWrongPassword() {
         String hashedPassword = passwordHasher.hash(password.toCharArray());
-        String wrongPassword = "wrongTestPassword";
         assertFalse(passwordHasher.check(wrongPassword.toCharArray(), hashedPassword));
+    }
+
+
+    /**
+     * Ensures that the hashes that were previously created by OpenBSDBCrypt are still valid
+     */
+    @Test
+    public void shouldBeBackwardsCompatible(){
+        String legacyHash = "$2y$12$gdh2ecVBQmwpmcAeyReicuNtXyR6GMWSfXHxtcBBqFeFz2VQ8kDZe";
+        assertTrue(passwordHasher.check(password.toCharArray(), legacyHash));
+        assertFalse(passwordHasher.check(wrongPassword.toCharArray(), legacyHash));
+
     }
 
     @Test
@@ -52,4 +65,5 @@ public class PasswordHasherTest {
         assertTrue(new String(password).equals("\0\0\0\0\0\0\0\0"));
         assertTrue(passwordBuffer.toString().equals("\0\0\0\0\0\0\0\0"));
     }
+
 }

@@ -28,8 +28,8 @@ import org.opensearch.core.rest.RestStatus;
 import org.opensearch.core.xcontent.ToXContent;
 import org.opensearch.security.DefaultObjectMapper;
 import org.opensearch.security.configuration.ConfigurationRepository;
+import org.opensearch.security.hasher.BCryptPasswordHasher;
 import org.opensearch.security.hasher.PasswordHasher;
-import org.opensearch.security.hasher.PasswordHasherImpl;
 import org.opensearch.security.securityconf.impl.CType;
 import org.opensearch.security.securityconf.impl.SecurityDynamicConfiguration;
 import org.opensearch.threadpool.ThreadPool;
@@ -78,7 +78,7 @@ public abstract class AbstractApiActionValidationTest {
             Settings.EMPTY
         );
 
-        passwordHasher = new PasswordHasherImpl();
+        passwordHasher = new BCryptPasswordHasher();
     }
 
     void setupRolesConfiguration() throws IOException {

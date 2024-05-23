@@ -1,3 +1,14 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
 package org.opensearch.security.hasher;
 
 import java.nio.CharBuffer;
@@ -8,7 +19,7 @@ import com.password4j.HashingFunction;
 import com.password4j.Password;
 import com.password4j.types.Bcrypt;
 
-public class PasswordHasherImpl implements PasswordHasher {
+public class BCryptPasswordHasher implements PasswordHasher {
 
     @Override
     public String hash(CharBuffer password) {

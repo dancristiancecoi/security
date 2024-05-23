@@ -31,8 +31,8 @@ import org.opensearch.security.dlic.rest.validation.EndpointValidator;
 import org.opensearch.security.dlic.rest.validation.RequestContentValidator;
 import org.opensearch.security.dlic.rest.validation.RequestContentValidator.DataType;
 import org.opensearch.security.dlic.rest.validation.ValidationResult;
+import org.opensearch.security.hasher.BCryptPasswordHasher;
 import org.opensearch.security.hasher.PasswordHasher;
-import org.opensearch.security.hasher.PasswordHasherImpl;
 import org.opensearch.security.securityconf.Hashed;
 import org.opensearch.security.securityconf.impl.CType;
 import org.opensearch.security.securityconf.impl.SecurityDynamicConfiguration;
@@ -95,7 +95,7 @@ public class InternalUsersApiAction extends AbstractApiAction {
         super(Endpoint.INTERNALUSERS, clusterService, threadPool, securityApiDependencies);
         this.userService = userService;
         this.requestHandlersBuilder.configureRequestHandlers(this::internalUsersApiRequestHandlers);
-        this.passwordHasher = new PasswordHasherImpl();
+        this.passwordHasher = new BCryptPasswordHasher();
     }
 
     @Override

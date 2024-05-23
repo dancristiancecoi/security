@@ -45,8 +45,8 @@ import org.opensearch.identity.tokens.AuthToken;
 import org.opensearch.identity.tokens.BasicAuthToken;
 import org.opensearch.security.DefaultObjectMapper;
 import org.opensearch.security.configuration.ConfigurationRepository;
+import org.opensearch.security.hasher.BCryptPasswordHasher;
 import org.opensearch.security.hasher.PasswordHasher;
-import org.opensearch.security.hasher.PasswordHasherImpl;
 import org.opensearch.security.securityconf.DynamicConfigFactory;
 import org.opensearch.security.securityconf.Hashed;
 import org.opensearch.security.securityconf.impl.CType;
@@ -98,7 +98,7 @@ public class UserService {
     public UserService(ClusterService clusterService, ConfigurationRepository configurationRepository, Settings settings, Client client) {
         this.clusterService = clusterService;
         this.configurationRepository = configurationRepository;
-        this.passwordHasher = new PasswordHasherImpl();
+        this.passwordHasher = new BCryptPasswordHasher();
         this.securityIndex = settings.get(
             ConfigConstants.SECURITY_CONFIG_INDEX_NAME,
             ConfigConstants.OPENDISTRO_SECURITY_DEFAULT_CONFIG_INDEX

@@ -29,8 +29,8 @@ import org.opensearch.common.settings.Settings;
 import org.opensearch.core.common.Strings;
 import org.opensearch.security.dlic.rest.validation.PasswordValidator;
 import org.opensearch.security.dlic.rest.validation.RequestContentValidator;
+import org.opensearch.security.hasher.BCryptPasswordHasher;
 import org.opensearch.security.hasher.PasswordHasher;
-import org.opensearch.security.hasher.PasswordHasherImpl;
 import org.opensearch.security.support.ConfigConstants;
 
 import org.yaml.snakeyaml.DumperOptions;
@@ -88,7 +88,7 @@ public class SecuritySettingsConfigurer {
 
     public SecuritySettingsConfigurer(Installer installer) {
         this.installer = installer;
-        this.passwordHasher = new PasswordHasherImpl();
+        this.passwordHasher = new BCryptPasswordHasher();
     }
 
     /**
@@ -201,7 +201,7 @@ public class SecuritySettingsConfigurer {
      */
     private boolean isAdminPasswordSetToAdmin(String internalUsersFile) throws IOException {
         JsonNode internalUsers = YAML_MAPPER.readTree(new FileInputStream(internalUsersFile));
-        PasswordHasher passwordHasher = new PasswordHasherImpl();
+        PasswordHasher passwordHasher = new BCryptPasswordHasher();
         return internalUsers.has("admin")
             && passwordHasher.check(DEFAULT_ADMIN_PASSWORD.toCharArray(), internalUsers.get("admin").get("hash").asText());
     }

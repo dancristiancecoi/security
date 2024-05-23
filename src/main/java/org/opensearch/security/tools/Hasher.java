@@ -35,8 +35,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import org.opensearch.security.hasher.BCryptPasswordHasher;
 import org.opensearch.security.hasher.PasswordHasher;
-import org.opensearch.security.hasher.PasswordHasherImpl;
 
 public class Hasher {
 
@@ -81,7 +81,7 @@ public class Hasher {
     }
 
     public static String hash(final char[] clearTextPassword) {
-        PasswordHasher passwordHasher = new PasswordHasherImpl();
+        PasswordHasher passwordHasher = new BCryptPasswordHasher();
         return passwordHasher.hash(clearTextPassword);
     }
 }
