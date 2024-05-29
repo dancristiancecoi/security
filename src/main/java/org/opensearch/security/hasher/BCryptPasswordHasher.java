@@ -12,41 +12,48 @@
 package org.opensearch.security.hasher;
 
 import java.nio.CharBuffer;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
 
 import com.password4j.BcryptFunction;
 import com.password4j.HashingFunction;
 import com.password4j.Password;
 import com.password4j.types.Bcrypt;
+import org.opensearch.SpecialPermission;
 
 public class BCryptPasswordHasher implements PasswordHasher {
 
     @Override
-    public String hash(CharBuffer password) {
-        try {
-            return Password.hash(password).with(getBCryptFunction()).getResult();
-        } finally {
-            cleanup(password);
-        }
-    }
-
-    @Override
     public String hash(char[] password) {
-        return hash(CharBuffer.wrap(password));
-    }
-
-    @Override
-    public boolean check(CharBuffer password, String hash) {
+        CharBuffer passwordBuffer = CharBuffer.wrap(password);
         try {
-            return Password.check(password, hash).with(getBCryptFunction());
+            SecurityManager securityManager = System.getSecurityManager();
+            if (securityManager != null) {
+                securityManager.checkPermission(new SpecialPermission());
+            }
+            return AccessController.doPrivileged(
+                    (PrivilegedAction<String>) () -> Password.hash(passwordBuffer).with(getBCryptFunction()).getResult()
+            );
         } finally {
-            cleanup(password);
+            cleanup(passwordBuffer);
         }
     }
 
     @Override
     public boolean check(char[] password, String hash) {
-        return check(CharBuffer.wrap(password), hash);
+        CharBuffer passwordBuffer = CharBuffer.wrap(password);
+        try {
+            SecurityManager securityManager = System.getSecurityManager();
+            if (securityManager != null) {
+                securityManager.checkPermission(new SpecialPermission());
+            }
+            return AccessController.doPrivileged(
+                    (PrivilegedAction<Boolean>) () -> Password.check(passwordBuffer, hash).with(getBCryptFunction())
+            );
+        } finally {
+            cleanup(passwordBuffer);
+        }
     }
 
     private void cleanup(CharBuffer password) {

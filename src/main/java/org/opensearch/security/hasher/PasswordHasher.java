@@ -11,16 +11,9 @@
 
 package org.opensearch.security.hasher;
 
-import java.nio.CharBuffer;
-
 public interface PasswordHasher {
-
-    String hash(CharBuffer password);
 
     String hash(char[] password);
 
-    boolean check(CharBuffer password, String hashedPassword);
-
     boolean check(char[] password, String hashedPassword);
-
 }
