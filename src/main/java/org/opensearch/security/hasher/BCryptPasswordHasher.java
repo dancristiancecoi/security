@@ -16,16 +16,21 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Arrays;
 
+import org.opensearch.OpenSearchSecurityException;
+import org.opensearch.SpecialPermission;
+
 import com.password4j.BcryptFunction;
 import com.password4j.HashingFunction;
 import com.password4j.Password;
 import com.password4j.types.Bcrypt;
-import org.opensearch.SpecialPermission;
 
 public class BCryptPasswordHasher implements PasswordHasher {
 
     @Override
     public String hash(char[] password) {
+        if (password == null || password.length == 0) {
+            throw new OpenSearchSecurityException("Password cannot be empty or null");
+        }
         CharBuffer passwordBuffer = CharBuffer.wrap(password);
         try {
             SecurityManager securityManager = System.getSecurityManager();
@@ -33,7 +38,7 @@ public class BCryptPasswordHasher implements PasswordHasher {
                 securityManager.checkPermission(new SpecialPermission());
             }
             return AccessController.doPrivileged(
-                    (PrivilegedAction<String>) () -> Password.hash(passwordBuffer).with(getBCryptFunction()).getResult()
+                (PrivilegedAction<String>) () -> Password.hash(passwordBuffer).with(getBCryptFunction()).getResult()
             );
         } finally {
             cleanup(passwordBuffer);
@@ -42,6 +47,12 @@ public class BCryptPasswordHasher implements PasswordHasher {
 
     @Override
     public boolean check(char[] password, String hash) {
+        if (password == null || password.length == 0) {
+            throw new OpenSearchSecurityException("Password cannot be empty or null");
+        }
+        if (hash == null || hash.isEmpty()) {
+            throw new OpenSearchSecurityException("Hash cannot be empty or null");
+        }
         CharBuffer passwordBuffer = CharBuffer.wrap(password);
         try {
             SecurityManager securityManager = System.getSecurityManager();
@@ -49,7 +60,7 @@ public class BCryptPasswordHasher implements PasswordHasher {
                 securityManager.checkPermission(new SpecialPermission());
             }
             return AccessController.doPrivileged(
-                    (PrivilegedAction<Boolean>) () -> Password.check(passwordBuffer, hash).with(getBCryptFunction())
+                (PrivilegedAction<Boolean>) () -> Password.check(passwordBuffer, hash).with(getBCryptFunction())
             );
         } finally {
             cleanup(passwordBuffer);

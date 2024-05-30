@@ -15,6 +15,8 @@ import java.nio.CharBuffer;
 
 import org.junit.Test;
 
+import org.opensearch.OpenSearchSecurityException;
+
 import static org.junit.Assert.*;
 
 public class BCryptPasswordHasherTests {
@@ -47,6 +49,37 @@ public class BCryptPasswordHasherTests {
     }
 
     @Test
+    public void shouldGenerateDifferentHashesForTheSamePassword() {
+        String hash1 = passwordHasher.hash(password.toCharArray());
+        String hash2 = passwordHasher.hash(password.toCharArray());
+        assertNotEquals(hash1, hash2);
+    }
+
+    @Test
+    public void shouldHandleNullPasswordWhenHashing() {
+        char[] nullPassword = null;
+        assertThrows(OpenSearchSecurityException.class, () -> { passwordHasher.hash(nullPassword); });
+    }
+
+    @Test
+    public void shouldHandleNullPasswordWhenChecking() {
+        char[] nullPassword = null;
+        assertThrows(OpenSearchSecurityException.class, () -> { passwordHasher.check(nullPassword, "some hash"); });
+    }
+
+    @Test
+    public void shouldHandleEmptyHashWhenChecking() {
+        String emptyHash = "";
+        assertThrows(OpenSearchSecurityException.class, () -> { passwordHasher.check(password.toCharArray(), emptyHash); });
+    }
+
+    @Test
+    public void shouldHandleNullHashWhenChecking() {
+        String nullHash = null;
+        assertThrows(OpenSearchSecurityException.class, () -> { passwordHasher.check(password.toCharArray(), nullHash); });
+    }
+
+    @Test
     public void shouldCleanupPasswordCharArray() {
         char[] password = new char[] { 'p', 'a', 's', 's', 'w', 'o', 'r', 'd' };
         passwordHasher.hash(password);
@@ -61,5 +94,4 @@ public class BCryptPasswordHasherTests {
         assertEquals("\0\0\0\0\0\0\0\0", new String(password));
         assertEquals("\0\0\0\0\0\0\0\0", passwordBuffer.toString());
     }
-
 }
