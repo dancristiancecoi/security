@@ -1,0 +1,20 @@
+apply plugin: 'com.gradleup.shadow'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'jacoco'
+apply plugin: 'maven-publish'
+
+
+repositories {
+    maven { url "build.shibboleth.net/maven/releases"}
+}
+
+dependencies {
+    implementation "org.opensaml:opensaml-security-api:5.1.4"
+    implementation "org.apache.httpcomponents.client5:httpclient5:5.4.4"
+    implementation "org.apache.httpcomponents.client5:httpclient5-cache:5.4.4"
+}
+
+tasks.shadowJar.configure {
+    exclude('META-INF/services/org.opensaml.security.crypto.ec.NamedCurve')
+}
