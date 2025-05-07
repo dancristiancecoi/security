@@ -12,8 +12,7 @@ package org.opensearch.test.framework.certificate;
 import java.security.Provider;
 import java.util.Optional;
 
-//import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 
 import static org.opensearch.test.framework.certificate.AlgorithmKit.ecdsaSha256withEcdsa;
@@ -32,7 +31,7 @@ class CertificatesIssuerFactory {
 
     }
 
-    private static final Provider DEFAULT_SECURITY_PROVIDER = new BouncyCastleFipsProvider();
+    private static final Provider DEFAULT_SECURITY_PROVIDER = new BouncyCastleProvider();
 
     /**
     * @see {@link #rsaBaseCertificateIssuer(Provider)}
