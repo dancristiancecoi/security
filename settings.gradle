@@ -5,6 +5,7 @@
  */
 
 rootProject.name = 'opensearch-security'
+include 'libs:opensaml-api'
 
 include "spi"
 project(":spi").name = "opensearch-security-spi"

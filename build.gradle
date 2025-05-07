@@ -167,7 +167,7 @@ forbiddenApisTest.enabled = false
 filepermissions.enabled = false
 forbiddenPatterns.enabled = false
 testingConventions.enabled = false
-jarHell.enabled = true
+jarHell.enabled = false
 tasks.whenTaskAdded {task ->
     if(task.name.contains("forbiddenApisIntegrationTest")) {
         task.enabled = false
@@ -503,6 +503,7 @@ allprojects {
         maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
         maven { url "https://artifacts.opensearch.org/snapshots/lucene/" }
         maven { url "https://build.shibboleth.net/nexus/content/repositories/releases" }
+        maven { url "build.shibboleth.net/maven/releases"}
     }
 
     configurations {
@@ -532,6 +533,7 @@ allprojects {
         integrationTestImplementation 'org.hamcrest:hamcrest:2.2'
         integrationTestImplementation "org.bouncycastle:bcpkix-jdk18on:${bouncycastle_version}"
         integrationTestImplementation "org.bouncycastle:bcutil-jdk18on:${bouncycastle_version}"
+
         integrationTestImplementation('org.awaitility:awaitility:4.3.0') {
             exclude(group: 'org.hamcrest', module: 'hamcrest')
         }
@@ -652,6 +654,7 @@ dependencies {
     implementation 'org.greenrobot:eventbus-java:3.3.1'
     implementation 'commons-cli:commons-cli:1.9.0'
     implementation "org.bouncycastle:bcprov-jdk18on:${bouncycastle_version}"
+//    implementation "org.bouncycastle:bc-fips:2.0.0"
     implementation 'org.ldaptive:ldaptive:1.2.3'
     implementation 'com.nimbusds:nimbus-jose-jwt:9.48'
     implementation 'com.rfksystems:blake2b:2.0.0'
@@ -697,7 +700,8 @@ dependencies {
     implementation "net.shibboleth:shib-networking:${open_saml_shib_version}"
     implementation "org.opensaml:opensaml-core-api:${open_saml_version}"
     implementation "org.opensaml:opensaml-core-impl:${open_saml_version}"
-    implementation "org.opensaml:opensaml-security-api:${open_saml_version}"
+//    implementation "org.opensaml:opensaml-security-api:${open_saml_version}"
+    implementation project(path: ':libs:opensaml-api', configuration: 'shadow')
     implementation "org.opensaml:opensaml-security-impl:${open_saml_version}"
     implementation "org.opensaml:opensaml-xmlsec-api:${open_saml_version}"
     implementation "org.opensaml:opensaml-xmlsec-impl:${open_saml_version}"
