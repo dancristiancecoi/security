@@ -32,6 +32,7 @@ import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.opensaml.xmlsec.config.impl.DefaultSecurityConfigurationBootstrap;
 import org.opensearch.OpenSearchSecurityException;
 import org.opensearch.SpecialPermission;
 import org.opensearch.common.settings.Settings;
@@ -315,7 +316,7 @@ public class HTTPSamlAuthenticator implements HTTPAuthenticator, Destroyable {
 
     private static void initializeOpenSAMLConfiguration() throws InitializationException {
         log.info("Initializing OpenSAML using the Java Services API");
-
+        System.setProperty(DefaultSecurityConfigurationBootstrap.CONFIG_PROPERTY_ECDH_DEFAULT_KDF, DefaultSecurityConfigurationBootstrap.PBKDF2);
         final ServiceLoader<Initializer> serviceLoader = ServiceLoader.load(Initializer.class);
         for (Initializer initializer : serviceLoader) {
             if (initializer instanceof XMLObjectProviderInitializer) {
