@@ -1,0 +1,4 @@
+repositories {
+    maven { url "build.shibboleth.net/maven/releases"}
+    mavenCentral()
+}
