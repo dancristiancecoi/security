@@ -1,0 +1,40 @@
+
+apply plugin: 'com.gradleup.shadow'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'jacoco'
+apply plugin: 'maven-publish'
+
+buildscript {
+    ext {
+        open_saml_version = '5.1.4'
+        open_saml_shib_version = "9.1.4"
+    }
+}
+repositories {
+    maven { url "build.shibboleth.net/maven/releases"}
+}
+
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set 'sources'
+    from sourceSets.main.allJava
+}
+
+dependencies {
+    implementation "org.opensaml:opensaml-security-api:${open_saml_version}"
+    implementation "org.opensaml:opensaml-security-impl:${open_saml_version}"
+    runtimeOnly "org.apache.httpcomponents.client5:httpclient5:5.4.4"
+    runtimeOnly "org.apache.httpcomponents.client5:httpclient5-cache:5.4.4"
+}
+
+tasks.shadowJar {
+    archiveVersion = ""
+}
+
+tasks.shadowJar.configure {
+    manifest {
+        attributes 'Automatic-Module-Name': 'org.opensaml.security'
+    }
+    exclude('META-INF/services/org.opensaml.security.crypto.ec.NamedCurve')
+}
