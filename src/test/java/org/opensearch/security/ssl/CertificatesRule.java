@@ -45,7 +45,7 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
-import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
@@ -53,7 +53,7 @@ import org.opensearch.common.collect.Tuple;
 
 public class CertificatesRule extends ExternalResource {
 
-    private final static BouncyCastleFipsProvider BOUNCY_CASTLE_PROVIDER = new BouncyCastleFipsProvider();
+    private final static BouncyCastleProvider BOUNCY_CASTLE_PROVIDER = new BouncyCastleProvider();
 
     private final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
