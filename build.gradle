@@ -531,8 +531,8 @@ allprojects {
         integrationTestImplementation "org.apache.logging.log4j:log4j-core:${versions.log4j}"
         integrationTestImplementation "org.apache.logging.log4j:log4j-jul:${versions.log4j}"
         integrationTestImplementation 'org.hamcrest:hamcrest:2.2'
-        integrationTestImplementation "org.bouncycastle:bc-fips:2.0.0"
-        integrationTestImplementation "org.bouncycastle:bcpkix-fips:2.0.7"
+        integrationTestImplementation "org.bouncycastle:bcpkix-jdk18on:${bouncycastle_version}"
+        integrationTestImplementation "org.bouncycastle:bcutil-jdk18on:${bouncycastle_version}"
         integrationTestImplementation('org.awaitility:awaitility:4.3.0') {
             exclude(group: 'org.hamcrest', module: 'hamcrest')
         }
@@ -636,13 +636,14 @@ tasks.integrationTest.finalizedBy(jacocoTestReport) // report is always generate
 //run the integrationTest task before the check task
 check.dependsOn integrationTest
 
+configurations.all {
+    exclude group:"org.bouncycastle", module: "bc-fips"
+    exclude group:"org.bouncycastle", module:"bctls-fips"
+    exclude group:"org.bouncycastle", module:"bcutil-fips"
+    exclude group:"org.bouncycastle", module:"bcpkix-fips"
+}
 
 dependencies {
-
-    implementation "org.bouncycastle:bc-fips:2.0.0"
-    implementation "org.bouncycastle:bcpkix-fips:2.0.7"
-    implementation "org.bouncycastle:bcutil-fips:2.0.3"
-
 
     implementation project(path: ":${rootProject.name}-spi", configuration: 'shadow')
     implementation "org.opensearch.plugin:transport-netty4-client:${opensearch_version}"
@@ -654,6 +655,7 @@ dependencies {
     implementation "com.google.guava:guava:${guava_version}"
     implementation 'org.greenrobot:eventbus-java:3.3.1'
     implementation 'commons-cli:commons-cli:1.9.0'
+    implementation "org.bouncycastle:bcprov-jdk18on:${bouncycastle_version}"
     implementation 'org.ldaptive:ldaptive:1.2.3'
     implementation 'com.nimbusds:nimbus-jose-jwt:9.48'
     implementation 'com.rfksystems:blake2b:2.0.0'
@@ -756,8 +758,8 @@ dependencies {
     testImplementation('org.awaitility:awaitility:4.3.0') {
         exclude(group: 'org.hamcrest', module: 'hamcrest')
     }
-    testImplementation "org.bouncycastle:bc-fips:2.0.0"
-    testImplementation "org.bouncycastle:bcpkix-fips:2.0.7"
+    testImplementation "org.bouncycastle:bcpkix-jdk18on:${bouncycastle_version}"
+    testImplementation "org.bouncycastle:bcutil-jdk18on:${bouncycastle_version}"
 
     // JUnit build requirement
     testCompileOnly 'org.apiguardian:apiguardian-api:1.1.2'

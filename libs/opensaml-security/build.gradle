@@ -58,12 +58,9 @@ tasks.shadowJar {
     exclude 'org/publicsuffix/**'
     exclude 'org/slf4j/**'
     exclude 'javax/**'
-    archiveVersion = ""
-}
+    exclude 'META-INF/versions/**/org/bouncycastle/**'
 
-tasks.shadowJar.configure {
-    manifest {
-        attributes 'Automatic-Module-Name': 'org.opensaml.security'
-    }
-    exclude('META-INF/services/org.opensaml.security.crypto.ec.NamedCurve')
+    exclude 'META-INF/services/org.opensaml.security.crypto.ec.NamedCurve'
+
+    archiveVersion = ""
 }
