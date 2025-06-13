@@ -50,6 +50,7 @@ dependencies {
 }
 
 tasks.shadowJar {
+    mergeServiceFiles()
     exclude 'com/**'
     exclude 'org/apache/**'
     exclude 'org/bouncycastle/**'
@@ -59,8 +60,6 @@ tasks.shadowJar {
     exclude 'org/slf4j/**'
     exclude 'javax/**'
     exclude 'META-INF/versions/**/org/bouncycastle/**'
-
     exclude 'META-INF/services/org.opensaml.security.crypto.ec.NamedCurve'
-
     archiveVersion = ""
 }
